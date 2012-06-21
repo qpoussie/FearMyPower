@@ -1,0 +1,79 @@
+@(Questionnaires: List[Questionnaire], QuestionnaireForm: Form[Questionnaire])
+
+@import helper._
+@import java.util.Calendar
+@import java.text.SimpleDateFormat
+
+
+@displayDate(d: java.util.Date) = @{
+	val formatString = "EEEE d MMMM YYYY"
+	val simpleDateFormat = new SimpleDateFormat(formatString)
+	simpleDateFormat format d
+}
+ 
+
+@main("Questionnaire Pour Manifestations Professionnels") {
+    
+	<header>
+		<h1>Questionnaire Pour Manifestations Professionnels</h1>
+		<br>
+	   	[<a href="./consult">Consulter</a>] [<a href="./creation">Creer</a>] [<a href="./admin">Admin</a>] [<a href="http://intranet">Sortir</a>] 
+	</header>     
+	<br> 
+	<br> 
+	<br>
+	<body>   
+	    Questionnaireestations existantes :
+	    <center>
+	    <table border="1">
+			<th> createur </th>
+			<th> Date debut </th>
+			<th> Titre </th>
+			<th> date fin </th>
+			<th> nombre de personne </th>
+			<th> supprimer </th>
+	        @for(quest <- Questionnaires) {
+	        	<tr>
+	        		<td>
+	            		@quest.createur 
+	            	</td>
+					<td> 
+						@displayDate(quest.debut)
+	            	</td>
+	            	<td> 
+	            		@quest.titre
+	            	</td>
+	            	<td> 
+	            		@displayDate(quest.fin)
+	            	</td>
+	            	<td> 
+	            		<center>nbPersValid / @quest.persMax</center>
+	            	</td>            	
+	            	<td>
+	            	
+	                    <center><a id=@quest.id class="suppr btn btn-danger"> <i class="icon-trash"> </i></a></center>
+	                
+	                </td>
+	            </tr>
+	        }
+	    </table>
+	    </center>
+	</body>
+	<script type="text/javascript">
+		$(".suppr").live("click", function(){
+			var idQuest = $(this).attr("id");
+	 		 $.ajax({
+				type: "POST",
+				url: "@routes.Application.deleteQuestionnaire()",
+				data: '{"id" : "' + idQuest + '"}',
+				contentType: "application/json",
+				success : function(data) {
+			  		alert("Participant supprim\351");
+				}
+	  		});
+	  		$(this).parents("tr").remove();
+		});
+		
+		
+	</script>
+}

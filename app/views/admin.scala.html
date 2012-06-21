@@ -1,0 +1,71 @@
+@(utilisateurs: List[Utilisateur], adminForm: Form[Utilisateur])
+
+@import helper._
+
+@main("Questionnaire Pour Manifestations Professionnels") {
+    
+	<header>
+		<h1>Questionnaire Pour Manifestations Professionnels</h1>
+		<br>
+	   	[<a href="./consult">Consulter</a>] [<a href="./creation">Creer</a>] [<a href="./admin">Admin</a>] [<a href="http://intranet">Sortir</a>] 
+	</header>     
+	<br> 
+	<br> 
+	<br>
+	<body>   
+	   <h2>Utilisateurs existant :</h2>
+	    <center>
+	    <table border="1">
+			<th> Nom </th>
+			<th> MdP </th>
+			<th> supprimer </th>
+	        @for(utilisateur <- utilisateurs) {
+	        	<tr>
+	        		<td>
+	            		@utilisateur.getNom
+	            	</td>
+					<td> 
+	            		@utilisateur.getPass
+	            	</td>
+	            	<td>
+	                    <center><a id=@utilisateur.id class="delete btn btn-danger"> <i class="icon-trash"> </i></a></center>
+	                </td>
+	            </tr>
+	        }
+	    </table>
+	    <br> 
+		<br> 
+		<br>
+		<h2>Creer un tuilisateur :</h2>
+		@form(routes.Application.createUser()) {
+			@inputText(field = adminForm("nom"),'placeholder -> "Nom",
+				'_label -> "Nom",
+				'_error -> adminForm("nom").error.map(_.withMessage("Entrez un nom."))
+			)
+			
+			@inputPassword(field = adminForm("pass"),'placeholder -> "Password",
+				'_label -> "Mot de passe",
+				'_error -> adminForm("pass").error.map(_.withMessage("Entrez le mdp."))
+			)
+			<button class="btn btn-success" type="submit">Valider</button> <button class="btn btn-warning" type="reset">Mise a blanc</button>
+		}	    
+	</body>
+	
+	<script type="text/javascript">
+		$(".delete").live("click", function(){
+			 var idUser = $(this).attr("id");
+	 		 $.ajax({
+				type: "POST",
+				url: "@routes.Application.deleteUser()",
+				data: '{"idUser" : "' + idUser + '"}',
+				contentType: "application/json",
+				success : function(data) {
+			  		alert("Utilisateur supprim\351");
+				}
+	  		});
+	  		$(this).parents("tr").remove();
+		});		
+		
+		
+	</script>
+}
